@@ -1,0 +1,14 @@
+# Python dependencies for SEC filings data extraction scripts
+
+# Core data processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Excel file handling
+openpyxl>=3.1.0
+
+# Date/time utilities (included in standard library, listed for reference)
+# datetime
+# pathlib
+# re
+

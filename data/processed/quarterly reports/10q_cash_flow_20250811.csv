@@ -1,0 +1,36 @@
+consolidated_statements_of_cash_flows,consolidated_statements_of_cash_flows_dup1,consolidated_statements_of_cash_flows_dup2,consolidated_statements_of_cash_flows_dup3,consolidated_statements_of_cash_flows_dup4,column_6,column_7
+,,,,,,
+,2025.0,2025.0,,,2024.0,2024.0
+Cash flows from operating activities:,,,,,,
+Net loss,-12238.0,-12238.0,,,-5181.0,-5181.0
+Adjustments to reconcile net income to net cash provided by operating activities:,,,,,,
+Accounts receivable,,-335.0,,,,2448.0
+Inventory,,-334.0,,,,424.0
+Prepaid expenses and other current assets,,-133.0,,,,15.0
+Right-of-use asset,,-289.0,,,,-288.0
+Accounts payable,,187.0,,,,-111.0
+Tax payable,,35.0,,,,-197.0
+Accrued expenses,,-15.0,,,,-26.0
+Deferred tax assets,,,,,,518.0
+Depreciation and amortization,,1635.0,,,,7.0
+"Operating lease liabilities, current",,130.0,,,,34.0
+"Operating lease liabilities, non- current",,160.0,,,,253.0
+Other non-current assets,,,,,,-17.0
+Net cash provided by operating activities,,-11197.0,,,,-2121.0
+Cash flows from investing activities:,,,,,,
+Cash used for lending to related parties,,,,,,135.0
+Purchase of equipment,,-4509.0,,,,
+Purchase of intangible assets,,-100.0,,,,
+Purchase of short-term investments,,-36676.0,,,,
+Purchase of long-term investments,,-247.0,,,,
+Net cash used in investing activities,,-41532.0,,,,135.0
+Cash flows from financing activities:,,,,,,
+Payment of loans received from third parties,,-53.0,,,,-1459.0
+Loans received from third parties,,22.0,,,,3000.0
+Payment of related party debt,,,,,,-238.0
+Proceeds from issuance of ordinary shares,,71087.0,,,,173.0
+Proceeds from stockholder capital injection,,,,,,9278.0
+Net cash used in financing activities,,71056.0,,,,10754.0
+Net change in cash and cash equivalents,,18327.0,,,,8768.0
+"Cash, cash equivalents and restricted cash at beginning of the period",14566.0,14566.0,,,433.0,433.0
+"Cash, cash equivalents and restricted cash at end of the period",32893.0,32893.0,,,9201.0,9201.0

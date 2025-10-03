@@ -1,0 +1,40 @@
+unaudited_consolidated_balance_sheets,unaudited_consolidated_balance_sheets_dup1,unaudited_consolidated_balance_sheets_dup2,column_6,column_7
+,,,,
+,2024.0,2024.0,2024.0,2024.0
+ASSETS,,,,
+Current assets:,,,,
+Cash and cash equivalents,19827.0,19827.0,14566.0,14566.0
+Short term investment,,16067.0,,15940.0
+"Accounts receivable, (net of allowance for doubtful accounts)",,2115.0,,1359.0
+"Amount due from related parties, current",,,,
+Inventory,,1396.0,,1148.0
+Prepaid expenses and other current assets,,53.0,,33.0
+Total current assets,,39458.0,,33046.0
+"Property and equipment, net",,802.0,,738.0
+Operating lease right-of-use-assets,,673.0,,506.0
+"Intangible assets, net",,9576.0,,7621.0
+"Other assets, non-current",,915.0,,740.0
+Total assets,51424.0,51424.0,42651.0,42651.0
+LIABILITIES AND STOCKHOLDERS’ EQUITY,,,,
+Current liabilities:,,,,
+Accounts payable,530.0,530.0,150.0,150.0
+"Amount due to related parties, current",,,,
+Accrued expenses,,170.0,,97.0
+Short-term loan,,53.0,,53.0
+Tax payables,,31.0,,5.0
+"Operating lease liabilities, current",,209.0,,150.0
+Total current liabilities,,993.0,,455.0
+Long-term payables,,98.0,,102.0
+"Operating lease liabilities, non-current",,464.0,,356.0
+Total liabilities,,1555.0,,913.0
+Commitments and contingencies (Note 7),,,,
+"Stockholders’
+    equity:",,,,
+"Class A Common stock, $ 0.0001  par,  100,000,000  shares authorized as of December 31, 2024 and September 30, 2024,  39,934,846  shares issued and outstanding as of December 31, 2024 and September 30, 2023, respectively",4.0,4.0,4.0,4.0
+"Class B Common stock, $ 0.0001  par,  200,000,000  shares authorized as of December 31, 2024 and September 30, 2024,  67,623,705  shares and  53,795,254  shares issued and outstanding as of December 31, 2024 and September 30, 2023, respectively.",,7.0,,6.0
+Additional Paid-in Capital,,61366.0,,49667.0
+Retained earnings,,-11487.0,,-7939.0
+Total controlling stockholders’ equity,,49890.0,,41738.0
+Non-controlling interests,,-21.0,,
+Total stockholders’ equity,,49869.0,,41738.0
+Total liabilities and stockholders’ equity,51424.0,51424.0,42651.0,42651.0

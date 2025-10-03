@@ -1,0 +1,12 @@
+properties,properties_dup1,properties_dup2,none,none_dup1,none_dup2,none_dup3,none_dup4,none_dup5
+Lessor,Lessee,Location,"Area
+    (Square Feet)","Area
+    (Square Feet)","Annual
+    Rent","Annual
+    Rent","Current
+    Term Expires",Use
+"Utopia Village, L.P.",Richtech Robotics Inc.,"13706 Research Blvd, Suite 200, Austin, TX 78750",,2580,37200,37200,"April 30, 2024",Sales and Marketing Office
+"Cameron Industrial Park, LLC",Richtech Robotics Inc.,"4175 Cameron St, Ste 1 & 2 & A1 & 5, Las Vegas,
+    NV 89103",,11222,139554,139554,"August 31, 2027",HQ
+"Forum Shops, LLC",Richtech Robotics Inc.,"3500 Las Vegas Blvd. So. Unit 0R06A, Las Vegas, NV 89109",,1971,60002,60002,"January 31, 2024",Boba Tea store
+"Forum Shops, LLC",Richtech Robotics,"3500 Las Vegas Blvd. So. Unit TT7, Las Vegas, NV 89109",,100,10002,10002,"January 31, 2024",Boba Tea store
