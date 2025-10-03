@@ -4,7 +4,7 @@ Automated data extraction from Richtech Robotics SEC filings in Excel format.
 
 ## Overview
 
-This suite of Python scripts extracts structured data from various SEC filing types and converts them to CSV format for analysis.
+This suite of Python scripts extracts structured data from various SEC filing types and converts them to CSV format for analysis. This is an **independent equity research project** created to analyze Richtech Robotics Inc. (Ticker: RR) as a potential investment opportunity. The tools extract financial data, insider transactions, patent information, and other key metrics from SEC filings to enable comprehensive due diligence and investment analysis.
 
 ## Supported Filing Types
 
@@ -281,11 +281,9 @@ result = process_form4_file(
 print(result)
 ```
 
-## License
+## Disclaimer
 
-Part of Richtech Robotics Equity Research project.
+This is an independent equity research project for personal investment analysis. This project is not affiliated with, endorsed by, or associated with Richtech Robotics Inc. All data is extracted from publicly available SEC filings.
 
-## Contact
-
-For questions or issues, please create an issue in the project repository.
+**Investment Disclaimer:** This tool is for informational and research purposes only. It does not constitute investment advice. Always conduct your own due diligence and consult with qualified financial advisors before making investment decisions.
 
