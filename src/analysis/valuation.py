@@ -115,7 +115,11 @@ def calculate_market_metrics(
         df_fin['year_quarter'] = df_fin['year'].astype(str) + '-Q' + df_fin['quarter'].astype(str)
     
     # Create quarterly aggregations of market data
-    df_mkt['year_quarter'] = df_mkt['date'].dt.to_period('Q').astype(str)
+    # Format as YYYY-QN to match financial data format
+    df_mkt['year'] = df_mkt['date'].dt.year
+    df_mkt['quarter'] = df_mkt['date'].dt.quarter
+    df_mkt['year_quarter'] = df_mkt['year'].astype(str) + '-Q' + df_mkt['quarter'].astype(str)
+    
     market_quarterly = df_mkt.groupby('year_quarter').agg({
         'close': 'last',  # Last closing price of quarter
         'volume': 'sum',
@@ -257,6 +261,11 @@ def plot_valuation_ratios(df_valuation: pd.DataFrame, output_dir: str):
     """Create visualization of valuation ratios over time."""
     import matplotlib.pyplot as plt
     import seaborn as sns
+    import pandas as pd
+    
+    if len(df_valuation) == 0:
+        print("⚠ No valuation data to plot")
+        return
     
     sns.set_style("whitegrid")
     
@@ -264,18 +273,30 @@ def plot_valuation_ratios(df_valuation: pd.DataFrame, output_dir: str):
     
     # P/E Ratio
     if 'pe_ratio' in df_valuation.columns and 'year_quarter' in df_valuation.columns:
-        axes[0, 0].plot(df_valuation['year_quarter'], df_valuation['pe_ratio'], 
-                       marker='o', linewidth=2, color='darkblue')
-        axes[0, 0].set_title('P/E Ratio Over Time', fontweight='bold')
+        df_pe = df_valuation[df_valuation['pe_ratio'].notna()]
+        if len(df_pe) > 0:
+            axes[0, 0].plot(df_pe['year_quarter'], df_pe['pe_ratio'], 
+                           marker='o', linewidth=2, color='darkblue')
+            axes[0, 0].set_title('P/E Ratio Over Time', fontweight='bold')
+        else:
+            axes[0, 0].text(0.5, 0.5, 'N/A\n(Negative Earnings)', 
+                          ha='center', va='center', fontsize=14, transform=axes[0, 0].transAxes)
+            axes[0, 0].set_title('P/E Ratio Over Time', fontweight='bold')
         axes[0, 0].set_xlabel('Quarter')
         axes[0, 0].set_ylabel('P/E Ratio')
         axes[0, 0].grid(True, alpha=0.3)
-        plt.setp(axes[0, 0].xaxis.get_majorticklabels(), rotation=45, ha='right')
     
     # P/B Ratio
     if 'pb_ratio' in df_valuation.columns:
-        axes[0, 1].plot(df_valuation['year_quarter'], df_valuation['pb_ratio'],
-                       marker='s', linewidth=2, color='darkgreen')
+        df_pb = df_valuation[df_valuation['pb_ratio'].notna()]
+        if len(df_pb) > 0:
+            axes[0, 1].plot(df_pb['year_quarter'], df_pb['pb_ratio'],
+                           marker='s', linewidth=2, color='darkgreen')
+            axes[0, 1].axhline(y=1.0, color='orange', linestyle='--', alpha=0.5, label='Book Value')
+            axes[0, 1].legend()
+        else:
+            axes[0, 1].text(0.5, 0.5, 'No Data', ha='center', va='center', 
+                          fontsize=14, transform=axes[0, 1].transAxes)
         axes[0, 1].set_title('P/B Ratio Over Time', fontweight='bold')
         axes[0, 1].set_xlabel('Quarter')
         axes[0, 1].set_ylabel('P/B Ratio')
@@ -284,18 +305,28 @@ def plot_valuation_ratios(df_valuation: pd.DataFrame, output_dir: str):
     
     # EV/EBITDA
     if 'ev_ebitda' in df_valuation.columns:
-        axes[1, 0].plot(df_valuation['year_quarter'], df_valuation['ev_ebitda'],
-                       marker='D', linewidth=2, color='darkred')
+        df_ev = df_valuation[df_valuation['ev_ebitda'].notna()]
+        if len(df_ev) > 0:
+            axes[1, 0].plot(df_ev['year_quarter'], df_ev['ev_ebitda'],
+                           marker='D', linewidth=2, color='darkred')
+        else:
+            axes[1, 0].text(0.5, 0.5, 'N/A\n(Negative EBITDA)', 
+                          ha='center', va='center', fontsize=14, transform=axes[1, 0].transAxes)
         axes[1, 0].set_title('EV/EBITDA Over Time', fontweight='bold')
         axes[1, 0].set_xlabel('Quarter')
         axes[1, 0].set_ylabel('EV/EBITDA')
         axes[1, 0].grid(True, alpha=0.3)
-        plt.setp(axes[1, 0].xaxis.get_majorticklabels(), rotation=45, ha='right')
     
     # P/S Ratio
     if 'ps_ratio' in df_valuation.columns:
-        axes[1, 1].plot(df_valuation['year_quarter'], df_valuation['ps_ratio'],
-                       marker='^', linewidth=2, color='purple')
+        df_ps = df_valuation[df_valuation['ps_ratio'].notna()]
+        if len(df_ps) > 0:
+            axes[1, 1].plot(df_ps['year_quarter'], df_ps['ps_ratio'],
+                           marker='^', linewidth=2.5, color='purple')
+            axes[1, 1].fill_between(df_ps['year_quarter'], df_ps['ps_ratio'], alpha=0.2, color='purple')
+        else:
+            axes[1, 1].text(0.5, 0.5, 'No Data', ha='center', va='center', 
+                          fontsize=14, transform=axes[1, 1].transAxes)
         axes[1, 1].set_title('P/S Ratio Over Time', fontweight='bold')
         axes[1, 1].set_xlabel('Quarter')
         axes[1, 1].set_ylabel('P/S Ratio')
