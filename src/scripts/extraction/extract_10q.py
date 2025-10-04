@@ -26,8 +26,14 @@ def extract_balance_sheet(file_path: str) -> Optional[pd.DataFrame]:
     
     Look for sheets with keywords: 'balance', 'assets', 'liabilities'
     """
-    sheet_keywords = ['balance', 'consolidated balance', 'unaudited consolidated bal']
-    matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
+    # Try specific sheet names first (better quality)
+    priority_keywords = ['part i  financial informat', 'unaudited consolidated bal', 'consolidated balance sheets']
+    matching_sheets = find_sheets_by_keyword(file_path, priority_keywords)
+    
+    # Fallback to more generic keywords
+    if not matching_sheets:
+        sheet_keywords = ['balance', 'assets']
+        matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
     if not matching_sheets:
         print("  No balance sheet found")

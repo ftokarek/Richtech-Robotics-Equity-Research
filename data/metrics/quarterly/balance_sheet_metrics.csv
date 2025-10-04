@@ -1,0 +1,7 @@
+date,source_file,total_assets,current_assets,total_liabilities,current_liabilities,stockholders_equity,cash,inventory,accounts_receivable
+2024-01-11,10k_balance_sheet_20240111.csv,,,,,,,,
+2024-02-14,10q_balance_sheet_20240214.csv,7853.0,6982.0,3044.0,2890.0,4809.0,433.0,822.0,5576.0
+2024-05-15,10q_balance_sheet_20240515.csv,7853.0,6982.0,3044.0,2890.0,4809.0,433.0,822.0,5576.0
+2024-08-15,10q_balance_sheet_20240815.csv,7853.0,6982.0,3044.0,2890.0,4809.0,433.0,822.0,5576.0
+2025-02-14,10q_balance_sheet_20250214.csv,42651.0,33046.0,913.0,455.0,41738.0,14566.0,1148.0,1359.0
+2025-08-11,10q_balance_sheet_20250811.csv,42651.0,33046.0,913.0,455.0,41738.0,14566.0,1148.0,1359.0

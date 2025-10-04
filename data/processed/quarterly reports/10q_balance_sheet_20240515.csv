@@ -1,7 +1,37 @@
-balances,balances_dup1,balances_dup2,column_6,column_7,column_10,column_11
-,Relationship,Notes,,,,
-Amounts due from related parties:,,,,,,
-Uplus Academy LLC,a,(i),,116.0,,118.0
-Uplus Academy NLV LLC,a,(i),,16.0,,16.0
-Zhenwu Huang,b,(v),,39.0,,
-,,,,171.0,,134.0
+part_i_-_financial_information,part_i_-_financial_information_dup1,part_i_-_financial_information_dup2,column_6,column_7
+,,,,
+,2024.0,2024.0,2023.0,2023.0
+ASSETS,,,,
+Current assets:,,,,
+Cash and cash equivalent,8195.0,8195.0,433.0,433.0
+"Accounts receivable, (net of allowance for doubtful accounts)",,3752.0,,5576.0
+"Amount due from related parties, current",,171.0,,134.0
+Inventory,,292.0,,822.0
+Prepaid expenses and other current assets,,1.0,,17.0
+Total current assets,,12411.0,,6982.0
+"Property and equipment, net",,24.0,,28.0
+"Deferred tax assets, net",,518.0,,518.0
+Operating lease right-of-use-assets,,258.0,,315.0
+"Other assets, non-current",,10.0,,10.0
+Total assets,13221.0,13221.0,7853.0,7853.0
+"LIABILITIES, PREFERRED STOCK AND STOCKHOLDERS’ EQUITY",,,,
+Current liabilities:,,,,
+Accounts payable,157.0,157.0,1126.0,1126.0
+"Amount due to related parties, current",,90.0,,238.0
+Accrued expenses,,2.0,,59.0
+Short-term loan,,2053.0,,845.0
+Tax payables,,442.0,,461.0
+"Operating lease liabilities, current",,167.0,,161.0
+Total current liabilities,,2911.0,,2890.0
+"Operating lease liabilities, non-current",,91.0,,154.0
+Total liabilities,,3002.0,,3044.0
+Commitments and contigencies,,,,
+Stockholders’ equity:,,,,
+"Class A Common stock, $ 0.00001  par,  47,400,000  shares authorized as of March 31, 2024 and September 30, 2023,  44,353,846  shares issued and outstanding as of March 31, 2024 and September 30, 2023, respectively",,,,
+"Class B Common stock, $ 0.00001  par,  60,600,000  shares authorized as of March 31, 2024 and September 30, 2023,  22,283,410  and  17,813,000  shares issued and outstanding as of March 31, 2024 and September 30, 2023,respectively.",,,,
+Additional Paid-in Capital,,13886.0,,4608.0
+Net income from continuing operations,,-3868.0,,-339.0
+Retained earnings opening,,201.0,,540.0
+Retained earnings,,-3667.0,,201.0
+Total stockholders’ equity,,10219.0,,4809.0
+"Total liabilities, preferred stock and stockholder’s equity",13221.0,13221.0,7853.0,7853.0

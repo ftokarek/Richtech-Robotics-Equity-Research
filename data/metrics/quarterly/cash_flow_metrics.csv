@@ -1,0 +1,4 @@
+date,source_file,operating_cf,investing_cf,financing_cf,capex,depreciation,free_cash_flow
+2025-02-14,10q_cash_flow_20250214.csv,-1209.0,-28.0,8339.0,-78.0,3.0,-1287.0
+2025-05-14,10q_cash_flow_20250514.csv,-2540.0,-37.0,10339.0,-116.0,3.0,-2656.0
+2025-08-11,10q_cash_flow_20250811.csv,-2121.0,135.0,10754.0,-4509.0,7.0,-6630.0

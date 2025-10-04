@@ -1,7 +1,35 @@
-balances,balances_dup1,balances_dup2,column_6,column_7,column_10,column_11
-,Relationship,Notes,,,,
-Amounts due from related parties:,,,,,,
-Uplus Academy LLC,a,(i),,116.0,,118.0
-Uplus Academy NLV LLC,a,(i),,16.0,,16.0
-Zhenwu Huang,b,(v),,31.0,,
-,,,,163.0,,134.0
+part_i_-_financial_information,part_i_-_financial_information_dup1,part_i_-_financial_information_dup2,column_6,column_7
+,,,,
+,2023.0,2023.0,2023.0,2023.0
+ASSETS,,,,
+Current assets:,,,,
+Cash and cash equivalents,7535.0,7535.0,433.0,433.0
+"Accounts receivable, (net of allowance for doubtful accounts of $ 165  and $ 333  as of December 31, 2023 and September 30, 2023, respectively)",,3144.0,,5576.0
+"Amount due from related parties, current",,163.0,,134.0
+Inventory,,654.0,,822.0
+Prepaid expenses and other current assets,,7.0,,17.0
+Total current assets,,11503.0,,6982.0
+"Property and equipment, net",,24.0,,28.0
+"Deferred tax assets, net",,518.0,,518.0
+Operating lease right-of-use-assets,,256.0,,315.0
+"Other assets, non-current",,10.0,,10.0
+Total assets,12311.0,12311.0,7853.0,7853.0
+"LIABILITIES, PREFERRED STOCK AND STOCKHOLDERS’ EQUITY",,,,
+Current liabilities:,,,,
+Accounts payable,60.0,60.0,1126.0,1126.0
+"Amount due to related parties, current",,85.0,,238.0
+Accrued expenses,,59.0,,59.0
+Short-term loan,,50.0,,845.0
+Tax Payable,,454.0,,461.0
+"Operating lease liabilities, current",,130.0,,161.0
+Total current liabilities,,838.0,,2890.0
+"Operating lease liabilities, non-current",,126.0,,154.0
+Total liabilities,,964.0,,3044.0
+Commitments and contingencies (Note 7),,,,
+Stockholders’ equity:,,,,
+"Class A Common stock, $ 0.00001  par,  47,400,000  shares authorized as of December 31, 2023 and September 30, 2023,  44,353,846  shares issued and outstanding as of December 31, 2023 and September 30, 2023, respectively.",,,,
+"Class B Common stock, $ 0.00001  par,  60,600,000  shares authorized as of December 31, 2023 and September 30, 2023,  19,955,563  and  17,813,000  shares issued and outstanding as of December 31, 2023 and September 30, 2023, respectively.",,,,
+Additional paid-in capital,,13894.0,,4608.0
+Retained earnings,,-2547.0,,201.0
+Total stockholders’ equity,,11347.0,,4809.0
+"Total liabilities, preferred stock and stockholders’ equity",12311.0,12311.0,7853.0,7853.0

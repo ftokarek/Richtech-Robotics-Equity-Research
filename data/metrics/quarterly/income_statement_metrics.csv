@@ -1,0 +1,4 @@
+date,source_file,revenue,cogs,gross_profit,operating_expenses,operating_income,interest_expense,net_income,ebit,eps_basic,eps_diluted,depreciation
+2025-02-14,10q_income_statement_20250214.csv,1106.0,496.0,610.0,2872.0,-2262.0,-486.0,-2748.0,-2748.0,-0.04,-0.04,
+2025-05-14,10q_income_statement_20250514.csv,1165.0,485.0,680.0,1626.0,-946.0,-174.0,-1120.0,-1120.0,-0.02,-0.02,
+2025-08-11,10q_income_statement_20250811.csv,1443.0,429.0,1014.0,1909.0,-895.0,-101.0,-1313.0,-996.0,-0.02,-0.02,
