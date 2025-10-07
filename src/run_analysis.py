@@ -1,21 +1,11 @@
-"""
-Master script to run complete financial analysis pipeline.
 
-Pipeline:
-1. Extract market data from ChartData.xlsx
-2. Extract financial metrics from processed SEC filings
-3. Calculate financial ratios
-4. Create time series aggregations
-5. Calculate valuation metrics
-6. Generate all visualizations
-"""
 
 import sys
 from pathlib import Path
 from datetime import datetime
 import argparse
 
-# Add modules to path
+
 sys.path.append(str(Path(__file__).parent / 'scripts'))
 sys.path.append(str(Path(__file__).parent / 'analysis'))
 
@@ -28,7 +18,7 @@ from analysis.visualize import generate_all_visualizations
 
 
 def print_banner():
-    """Print welcome banner."""
+    
     print("\n" + "=" * 80)
     print("RICHTECH ROBOTICS - COMPREHENSIVE FINANCIAL ANALYSIS")
     print("=" * 80)
@@ -37,7 +27,7 @@ def print_banner():
 
 
 def print_summary(results: dict):
-    """Print analysis summary."""
+    
     print("\n" + "=" * 80)
     print("ANALYSIS SUMMARY")
     print("=" * 80)
@@ -56,23 +46,17 @@ def print_summary(results: dict):
 
 
 def run_complete_analysis(base_dir: Path, skip_steps: list = None):
-    """
-    Run complete financial analysis pipeline.
     
-    Args:
-        base_dir: Base project directory
-        skip_steps: List of steps to skip
-    """
     skip_steps = skip_steps or []
     results = {}
     
-    # Define paths
+    
     raw_dir = base_dir / 'data' / 'raw'
     processed_dir = base_dir / 'data' / 'processed'
     metrics_dir = base_dir / 'data' / 'metrics'
     analysis_dir = base_dir / 'data' / 'analysis'
     
-    # Step 1: Extract market data
+    
     if 'market_data' not in skip_steps:
         print("STEP 1: Extracting Market Data")
         print("-" * 80)
@@ -98,7 +82,7 @@ def run_complete_analysis(base_dir: Path, skip_steps: list = None):
                 'message': str(e)
             }
     
-    # Step 2: Extract financial metrics
+    
     if 'extract_metrics' not in skip_steps:
         print("\nSTEP 2: Extracting Financial Metrics")
         print("-" * 80)
@@ -117,7 +101,7 @@ def run_complete_analysis(base_dir: Path, skip_steps: list = None):
             }
             return results
     
-    # Step 3: Calculate financial ratios
+    
     if 'calculate_ratios' not in skip_steps:
         print("\nSTEP 3: Calculating Financial Ratios")
         print("-" * 80)
@@ -135,7 +119,7 @@ def run_complete_analysis(base_dir: Path, skip_steps: list = None):
             }
             return results
     
-    # Step 4: Create time series
+    
     if 'time_series' not in skip_steps:
         print("\nSTEP 4: Creating Time Series")
         print("-" * 80)
@@ -153,7 +137,7 @@ def run_complete_analysis(base_dir: Path, skip_steps: list = None):
             }
             return results
     
-    # Step 5: Calculate valuation metrics
+    
     if 'valuation' not in skip_steps:
         print("\nSTEP 5: Calculating Valuation Metrics")
         print("-" * 80)
@@ -168,7 +152,7 @@ def run_complete_analysis(base_dir: Path, skip_steps: list = None):
                     df_timeseries, df_market, str(metrics_dir)
                 )
                 
-                # Generate valuation visualizations
+                
                 viz_output = analysis_dir / 'visualizations' / 'ratios'
                 plot_valuation_ratios(df_valuation, str(viz_output))
                 
@@ -188,7 +172,7 @@ def run_complete_analysis(base_dir: Path, skip_steps: list = None):
                 'message': str(e)
             }
     
-    # Step 6: Generate all visualizations
+    
     if 'visualizations' not in skip_steps:
         print("\nSTEP 6: Generating Visualizations")
         print("-" * 80)
@@ -223,7 +207,7 @@ def run_complete_analysis(base_dir: Path, skip_steps: list = None):
 
 
 def main():
-    """Main execution function."""
+    
     parser = argparse.ArgumentParser(
         description='Run comprehensive financial analysis for Richtech Robotics'
     )
@@ -238,19 +222,19 @@ def main():
     
     args = parser.parse_args()
     
-    # Print banner
+    
     print_banner()
     
-    # Get base directory
+    
     base_dir = Path(__file__).parent.parent
     
-    # Run analysis
+    
     results = run_complete_analysis(base_dir, skip_steps=args.skip or [])
     
-    # Print summary
+    
     print_summary(results)
     
-    # Print output locations
+    
     print("\n" + "=" * 80)
     print("OUTPUT LOCATIONS")
     print("=" * 80)

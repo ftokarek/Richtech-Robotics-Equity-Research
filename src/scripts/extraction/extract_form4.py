@@ -1,18 +1,11 @@
-"""
-Extract data from Form 4 - Statement of Changes in Beneficial Ownership.
 
-Form 4 has a very consistent structure:
-- Sheet 1: Reporting person information
-- Sheet 2: Non-derivative securities transactions
-- Sheet 3: Derivative securities transactions
-"""
 
 import pandas as pd
 from pathlib import Path
 import sys
 from typing import Dict, List, Optional
 
-# Add parent directory to path for imports
+
 sys.path.append(str(Path(__file__).parent.parent))
 from utils.excel_parser import (get_filing_metadata, extract_table_from_sheet, 
                                 get_sheet_names, read_excel_with_merged_cells)
@@ -21,32 +14,27 @@ from utils.data_cleaner import (clean_numeric_column, standardize_date,
 
 
 def extract_reporting_person(file_path: str, sheet_name: str) -> Dict[str, str]:
-    """
-    Extract reporting person information from first sheet.
     
-    Returns:
-        Dict with person name, title, relationship, address
-    """
     df = read_excel_with_merged_cells(file_path, sheet_name)
     
     person_info = {}
     
-    # Look for key information in the sheet
+    
     for idx, row in df.iterrows():
         row_str = ' '.join([str(val) for val in row if pd.notna(val)])
         
-        # Extract name (usually in first few rows)
+        
         if 'Name and Address of Reporting Person' in row_str or idx == 0:
-            # Name is often in next cells or rows
+            
             for val in row:
                 if pd.notna(val) and isinstance(val, str) and len(str(val)) > 3:
                     if 'Name and Address' not in str(val):
                         person_info['name'] = str(val).strip()
                         break
         
-        # Extract relationship
+        
         if 'Relationship of Reporting Person' in row_str or 'Director' in row_str or 'Officer' in row_str:
-            # Check for checkboxes/indicators
+            
             if 'Director' in row_str:
                 person_info['is_director'] = 'X' in row_str or '☑' in row_str
             if 'Officer' in row_str:
@@ -54,7 +42,7 @@ def extract_reporting_person(file_path: str, sheet_name: str) -> Dict[str, str]:
             if '10% Owner' in row_str:
                 person_info['is_10pct_owner'] = 'X' in row_str or '☑' in row_str
             
-            # Extract title if officer
+            
             for val in row:
                 if pd.notna(val) and isinstance(val, str):
                     if any(title in str(val) for title in ['President', 'CEO', 'CFO', 'Director', 'Officer']):
@@ -64,21 +52,16 @@ def extract_reporting_person(file_path: str, sheet_name: str) -> Dict[str, str]:
 
 
 def extract_nonderivative_transactions(file_path: str, sheet_name: str) -> pd.DataFrame:
-    """
-    Extract non-derivative securities transactions.
     
-    Returns:
-        DataFrame with transaction details
-    """
     df = extract_table_from_sheet(file_path, sheet_name, header_rows=2)
     
     if df.empty:
         return pd.DataFrame()
     
-    # Clean column names
+    
     df = clean_whitespace(df)
     
-    # Standardize important columns
+    
     column_mapping = {
         'title of security': 'security_title',
         '1. title of security': 'security_title',
@@ -99,46 +82,41 @@ def extract_nonderivative_transactions(file_path: str, sheet_name: str) -> pd.Da
         '6. ownership form': 'ownership_form'
     }
     
-    # Rename columns if they match patterns
+    
     for old_name, new_name in column_mapping.items():
         for col in df.columns:
             if old_name in str(col).lower():
                 df.rename(columns={col: new_name}, inplace=True)
                 break
     
-    # Clean numeric columns
+    
     numeric_cols = ['amount', 'shares', 'price', 'price_per_share', 
                    'securities_acquired', 'securities_disposed', 'securities_owned_after']
     for col in numeric_cols:
         if col in df.columns:
             df[col] = clean_numeric_column(df[col])
     
-    # Clean date columns
+    
     if 'transaction_date' in df.columns:
         df['transaction_date'] = df['transaction_date'].apply(standardize_date)
     
-    # Remove rows that are all NaN or just headers
+    
     df = df.dropna(how='all')
     
     return df
 
 
 def extract_derivative_transactions(file_path: str, sheet_name: str) -> pd.DataFrame:
-    """
-    Extract derivative securities transactions (options, warrants, etc.).
     
-    Returns:
-        DataFrame with derivative transaction details
-    """
     df = extract_table_from_sheet(file_path, sheet_name, header_rows=2)
     
     if df.empty:
         return pd.DataFrame()
     
-    # Clean column names
+    
     df = clean_whitespace(df)
     
-    # Standardize columns
+    
     column_mapping = {
         'title of derivative security': 'derivative_title',
         '1. title of derivative security': 'derivative_title',
@@ -161,13 +139,13 @@ def extract_derivative_transactions(file_path: str, sheet_name: str) -> pd.DataF
                 df.rename(columns={col: new_name}, inplace=True)
                 break
     
-    # Clean numeric columns
+    
     numeric_cols = ['exercise_price', 'number_of_securities', 'derivative_price']
     for col in numeric_cols:
         if col in df.columns:
             df[col] = clean_numeric_column(df[col])
     
-    # Clean date columns
+    
     date_cols = ['transaction_date', 'date_exercisable', 'expiration_date']
     for col in date_cols:
         if col in df.columns:
@@ -179,16 +157,7 @@ def extract_derivative_transactions(file_path: str, sheet_name: str) -> pd.DataF
 
 
 def process_form4_file(file_path: str, output_dir: str) -> Dict[str, str]:
-    """
-    Process a single Form 4 file and save extracted data.
     
-    Args:
-        file_path: Path to Form 4 Excel file
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        Dict with paths to output files and status
-    """
     print(f"Processing Form 4: {Path(file_path).name}")
     
     metadata = get_filing_metadata(file_path)
@@ -200,20 +169,20 @@ def process_form4_file(file_path: str, output_dir: str) -> Dict[str, str]:
     
     results = {'status': 'success', 'metadata': metadata}
     
-    # Extract reporting person info (first sheet)
+    
     person_info = extract_reporting_person(file_path, sheet_names[0])
     results['person_info'] = person_info
     
-    # Extract non-derivative transactions (second sheet)
+    
     nonderivative_df = extract_nonderivative_transactions(file_path, sheet_names[1])
     
-    # Add metadata columns
+    
     for key, value in metadata.items():
         nonderivative_df[key] = value
     for key, value in person_info.items():
         nonderivative_df[f'person_{key}'] = value
     
-    # Save non-derivative transactions
+    
     if not nonderivative_df.empty:
         filing_date = metadata.get('filing_date', 'unknown').replace('-', '')
         person_name = person_info.get('name', 'unknown').replace(' ', '_').replace('.', '')
@@ -222,11 +191,11 @@ def process_form4_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['nonderivative_file'] = output_file
         print(f"  Saved non-derivative transactions: {output_file}")
     
-    # Extract derivative transactions (third sheet, if exists)
+    
     if len(sheet_names) >= 3:
         derivative_df = extract_derivative_transactions(file_path, sheet_names[2])
         
-        # Add metadata
+        
         for key, value in metadata.items():
             derivative_df[key] = value
         for key, value in person_info.items():
@@ -242,21 +211,12 @@ def process_form4_file(file_path: str, output_dir: str) -> Dict[str, str]:
 
 
 def process_all_form4_files(input_dir: str, output_dir: str) -> List[Dict]:
-    """
-    Process all Form 4 files in the input directory.
     
-    Args:
-        input_dir: Directory containing Form 4 Excel files
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        List of processing results for each file
-    """
     input_path = Path(input_dir)
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     
-    # Find all Form 4 files
+    
     form4_files = list(input_path.glob('**/*Statement of changes in beneficial ownership*.xlsx'))
     
     print(f"\nProcessing {len(form4_files)} Form 4 files...")
@@ -271,7 +231,7 @@ def process_all_form4_files(input_dir: str, output_dir: str) -> List[Dict]:
             print(f"  Error processing {file_path.name}: {e}")
             results.append({'status': 'error', 'file': str(file_path), 'error': str(e)})
     
-    # Create summary
+    
     successful = sum(1 for r in results if r.get('status') == 'success')
     print(f"\n{'=' * 80}")
     print(f"Form 4 Processing Complete: {successful}/{len(form4_files)} successful")
@@ -280,7 +240,7 @@ def process_all_form4_files(input_dir: str, output_dir: str) -> List[Dict]:
 
 
 if __name__ == '__main__':
-    # Default paths
+    
     base_dir = Path(__file__).parent.parent.parent.parent
     input_dir = base_dir / 'data' / 'raw' / 'insider transactions'
     output_dir = base_dir / 'data' / 'processed' / 'insider transactions'

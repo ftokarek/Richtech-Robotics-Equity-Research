@@ -1,13 +1,4 @@
-"""
-Extract data from S-1 and 424B4 Registration Statements.
 
-These files contain:
-- Offering information
-- Pre-IPO and post-IPO ownership tables
-- Use of proceeds
-- Financial data (similar to 10-K/10-Q)
-- Risk factors (text-heavy, may skip)
-"""
 
 import pandas as pd
 from pathlib import Path
@@ -21,11 +12,7 @@ from utils.data_cleaner import clean_financial_table
 
 
 def extract_offering_information(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract offering details (number of shares, price, etc.).
     
-    Look for sheets with: 'offering', 'prospectus'
-    """
     sheet_keywords = ['offering', 'prospectus', 'shares']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -44,11 +31,7 @@ def extract_offering_information(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_preipo_ownership(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract pre-IPO private placement information.
     
-    Look for sheets with: 'pre-ipo', 'preipo', 'private placement'
-    """
     sheet_keywords = ['pre-ipo', 'preipo', 'private placement']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -68,11 +51,7 @@ def extract_preipo_ownership(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_beneficial_ownership_table(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract beneficial ownership table.
     
-    Look for sheets with: 'beneficial ownership', 'ownership table'
-    """
     sheet_keywords = ['beneficial ownership', 'ownership table']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -92,11 +71,7 @@ def extract_beneficial_ownership_table(file_path: str) -> Optional[pd.DataFrame]
 
 
 def extract_use_of_proceeds(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract use of proceeds information.
     
-    Look for sheets with: 'proceeds', 'use of proceeds'
-    """
     sheet_keywords = ['proceeds', 'use of proceeds']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -115,11 +90,7 @@ def extract_use_of_proceeds(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_placement_agent_warrants(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract placement agent warrants information.
     
-    Look for sheets with: 'placement agent', 'warrants'
-    """
     sheet_keywords = ['placement agent warrants', 'placement agent']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -138,11 +109,7 @@ def extract_placement_agent_warrants(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_risk_factors_summary(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract risk factors if in tabular form.
     
-    Look for sheets with: 'risk factors', 'risk'
-    """
     sheet_keywords = ['risk factors', 'risk']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -161,14 +128,10 @@ def extract_risk_factors_summary(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_financial_statements(file_path: str) -> Dict[str, pd.DataFrame]:
-    """
-    Extract financial statements if present in registration statement.
     
-    Returns dict with balance_sheet, income_statement, etc.
-    """
     results = {}
     
-    # Balance sheet
+    
     balance_keywords = ['balance sheet', 'balance']
     balance_sheets = find_sheets_by_keyword(file_path, balance_keywords)
     if balance_sheets:
@@ -177,7 +140,7 @@ def extract_financial_statements(file_path: str) -> Dict[str, pd.DataFrame]:
             results['balance_sheet'] = clean_financial_table(df, in_thousands=True)
             print(f"  ✓ Found balance sheet")
     
-    # Income statement
+    
     income_keywords = ['income', 'operations', 'statement of operations']
     income_sheets = find_sheets_by_keyword(file_path, income_keywords)
     if income_sheets:
@@ -193,16 +156,7 @@ def extract_financial_statements(file_path: str) -> Dict[str, pd.DataFrame]:
 
 
 def process_registration_file(file_path: str, output_dir: str) -> Dict[str, str]:
-    """
-    Process a single registration statement file and save extracted data.
     
-    Args:
-        file_path: Path to S-1/424B4 Excel file
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        Dict with paths to output files and status
-    """
     print(f"\nProcessing Registration: {Path(file_path).name}")
     
     metadata = get_filing_metadata(file_path)
@@ -211,7 +165,7 @@ def process_registration_file(file_path: str, output_dir: str) -> Dict[str, str]
     
     results = {'status': 'success', 'metadata': metadata, 'files_created': []}
     
-    # Extract offering information
+    
     offering_df = extract_offering_information(file_path)
     if offering_df is not None and not offering_df.empty:
         output_file = f"{output_dir}/{form_code}_offering_info_{filing_date}.csv"
@@ -219,7 +173,7 @@ def process_registration_file(file_path: str, output_dir: str) -> Dict[str, str]
         results['files_created'].append(output_file)
         print(f"  ✓ Saved offering information")
     
-    # Extract pre-IPO ownership
+    
     preipo_df = extract_preipo_ownership(file_path)
     if preipo_df is not None and not preipo_df.empty:
         output_file = f"{output_dir}/{form_code}_preipo_ownership_{filing_date}.csv"
@@ -227,7 +181,7 @@ def process_registration_file(file_path: str, output_dir: str) -> Dict[str, str]
         results['files_created'].append(output_file)
         print(f"  ✓ Saved pre-IPO ownership")
     
-    # Extract beneficial ownership
+    
     ownership_df = extract_beneficial_ownership_table(file_path)
     if ownership_df is not None and not ownership_df.empty:
         output_file = f"{output_dir}/{form_code}_beneficial_ownership_{filing_date}.csv"
@@ -235,7 +189,7 @@ def process_registration_file(file_path: str, output_dir: str) -> Dict[str, str]
         results['files_created'].append(output_file)
         print(f"  ✓ Saved beneficial ownership")
     
-    # Extract use of proceeds
+    
     proceeds_df = extract_use_of_proceeds(file_path)
     if proceeds_df is not None and not proceeds_df.empty:
         output_file = f"{output_dir}/{form_code}_use_of_proceeds_{filing_date}.csv"
@@ -243,7 +197,7 @@ def process_registration_file(file_path: str, output_dir: str) -> Dict[str, str]
         results['files_created'].append(output_file)
         print(f"  ✓ Saved use of proceeds")
     
-    # Extract placement agent warrants
+    
     warrants_df = extract_placement_agent_warrants(file_path)
     if warrants_df is not None and not warrants_df.empty:
         output_file = f"{output_dir}/{form_code}_placement_warrants_{filing_date}.csv"
@@ -251,7 +205,7 @@ def process_registration_file(file_path: str, output_dir: str) -> Dict[str, str]
         results['files_created'].append(output_file)
         print(f"  ✓ Saved placement agent warrants")
     
-    # Extract financial statements
+    
     financial_statements = extract_financial_statements(file_path)
     for stmt_type, df in financial_statements.items():
         output_file = f"{output_dir}/{form_code}_{stmt_type}_{filing_date}.csv"
@@ -263,21 +217,12 @@ def process_registration_file(file_path: str, output_dir: str) -> Dict[str, str]
 
 
 def process_all_registration_files(input_dir: str, output_dir: str) -> List[Dict]:
-    """
-    Process all registration statement files in the input directory.
     
-    Args:
-        input_dir: Directory containing S-1/424B4 Excel files
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        List of processing results for each file
-    """
     input_path = Path(input_dir)
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     
-    # Find all registration files (S-1, 424B4, etc.)
+    
     files_reg = list(input_path.glob('**/*.xlsx'))
     
     print(f"\nProcessing {len(files_reg)} Registration Statement files...")

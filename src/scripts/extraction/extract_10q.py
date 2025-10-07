@@ -1,13 +1,4 @@
-"""
-Extract data from 10-Q Quarterly Reports.
 
-10-Q files contain:
-- Consolidated balance sheets
-- Consolidated statements of operations
-- Consolidated statements of cash flows
-- Consolidated statements of stockholders' equity
-- Notes to financial statements
-"""
 
 import pandas as pd
 from pathlib import Path
@@ -21,16 +12,12 @@ from utils.data_cleaner import clean_financial_table, standardize_date
 
 
 def extract_balance_sheet(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract consolidated balance sheet data.
     
-    Look for sheets with keywords: 'balance', 'assets', 'liabilities'
-    """
-    # Try specific sheet names first (better quality)
+    
     priority_keywords = ['part i  financial informat', 'unaudited consolidated bal', 'consolidated balance sheets']
     matching_sheets = find_sheets_by_keyword(file_path, priority_keywords)
     
-    # Fallback to more generic keywords
+    
     if not matching_sheets:
         sheet_keywords = ['balance', 'assets']
         matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
@@ -39,7 +26,7 @@ def extract_balance_sheet(file_path: str) -> Optional[pd.DataFrame]:
         print("  No balance sheet found")
         return None
     
-    # Use first matching sheet
+    
     sheet_name = matching_sheets[0]
     print(f"  Extracting balance sheet from: {sheet_name}")
     
@@ -48,18 +35,14 @@ def extract_balance_sheet(file_path: str) -> Optional[pd.DataFrame]:
     if df.empty:
         return None
     
-    # Clean the data
+    
     df = clean_financial_table(df, in_thousands=True)
     
     return df
 
 
 def extract_income_statement(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract consolidated statement of operations (income statement).
     
-    Look for sheets with keywords: 'operations', 'income', 'statement of operations'
-    """
     sheet_keywords = ['operations', 'income', 'statement of operations', 
                      'unaudited consolidated sta', 'unaudited statements']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
@@ -68,7 +51,7 @@ def extract_income_statement(file_path: str) -> Optional[pd.DataFrame]:
         print("  No income statement found")
         return None
     
-    # Filter out cash flow and equity statements
+    
     for sheet in matching_sheets:
         if 'cash' not in sheet.lower() and 'equity' not in sheet.lower():
             sheet_name = sheet
@@ -89,11 +72,7 @@ def extract_income_statement(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_cash_flow(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract consolidated statement of cash flows.
     
-    Look for sheets with keywords: 'cash flow', 'cash'
-    """
     sheet_keywords = ['cash flow', 'cash', 'consolidated statements of cash']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -115,11 +94,7 @@ def extract_cash_flow(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_stockholders_equity(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract consolidated statement of stockholders' equity.
     
-    Look for sheets with keywords: 'equity', 'stockholders'
-    """
     sheet_keywords = ['equity', 'stockholders', 'shareholders', 
                      'consolidated statements of stockholders']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
@@ -142,11 +117,7 @@ def extract_stockholders_equity(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_revenue_breakdown(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract revenue disaggregation/breakdown from notes.
     
-    Look for sheets with: 'revenue', 'disaggregation'
-    """
     sheet_keywords = ['revenue', 'disaggregation', 'disaggregation of revenue']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -167,11 +138,7 @@ def extract_revenue_breakdown(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_earnings_per_share(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract earnings per share details.
     
-    Look for sheets with: 'earnings per share', 'eps'
-    """
     sheet_keywords = ['earnings per share', 'eps', 'note 3 earnings']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -192,16 +159,7 @@ def extract_earnings_per_share(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def process_10q_file(file_path: str, output_dir: str) -> Dict[str, str]:
-    """
-    Process a single 10-Q file and save extracted data.
     
-    Args:
-        file_path: Path to 10-Q Excel file
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        Dict with paths to output files and status
-    """
     print(f"\nProcessing 10-Q: {Path(file_path).name}")
     
     metadata = get_filing_metadata(file_path)
@@ -209,7 +167,7 @@ def process_10q_file(file_path: str, output_dir: str) -> Dict[str, str]:
     
     results = {'status': 'success', 'metadata': metadata, 'files_created': []}
     
-    # Extract balance sheet
+    
     balance_df = extract_balance_sheet(file_path)
     if balance_df is not None and not balance_df.empty:
         output_file = f"{output_dir}/10q_balance_sheet_{filing_date}.csv"
@@ -217,7 +175,7 @@ def process_10q_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved balance sheet")
     
-    # Extract income statement
+    
     income_df = extract_income_statement(file_path)
     if income_df is not None and not income_df.empty:
         output_file = f"{output_dir}/10q_income_statement_{filing_date}.csv"
@@ -225,7 +183,7 @@ def process_10q_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved income statement")
     
-    # Extract cash flow
+    
     cashflow_df = extract_cash_flow(file_path)
     if cashflow_df is not None and not cashflow_df.empty:
         output_file = f"{output_dir}/10q_cash_flow_{filing_date}.csv"
@@ -233,7 +191,7 @@ def process_10q_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved cash flow")
     
-    # Extract stockholders' equity
+    
     equity_df = extract_stockholders_equity(file_path)
     if equity_df is not None and not equity_df.empty:
         output_file = f"{output_dir}/10q_stockholders_equity_{filing_date}.csv"
@@ -241,7 +199,7 @@ def process_10q_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved stockholders' equity")
     
-    # Extract revenue breakdown
+    
     revenue_df = extract_revenue_breakdown(file_path)
     if revenue_df is not None and not revenue_df.empty:
         output_file = f"{output_dir}/10q_revenue_breakdown_{filing_date}.csv"
@@ -249,7 +207,7 @@ def process_10q_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved revenue breakdown")
     
-    # Extract EPS
+    
     eps_df = extract_earnings_per_share(file_path)
     if eps_df is not None and not eps_df.empty:
         output_file = f"{output_dir}/10q_earnings_per_share_{filing_date}.csv"
@@ -261,21 +219,12 @@ def process_10q_file(file_path: str, output_dir: str) -> Dict[str, str]:
 
 
 def process_all_10q_files(input_dir: str, output_dir: str) -> List[Dict]:
-    """
-    Process all 10-Q files in the input directory.
     
-    Args:
-        input_dir: Directory containing 10-Q Excel files
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        List of processing results for each file
-    """
     input_path = Path(input_dir)
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     
-    # Find all 10-Q files
+    
     files_10q = list(input_path.glob('**/*quarterly reports*.xlsx'))
     
     print(f"\nProcessing {len(files_10q)} 10-Q files...")

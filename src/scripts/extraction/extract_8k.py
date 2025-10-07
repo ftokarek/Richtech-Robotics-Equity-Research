@@ -1,12 +1,4 @@
-"""
-Extract data from 8-K Current Reports.
 
-8-K files report material events and vary widely in structure.
-Focus on extracting:
-- Metadata (filing date, items reported)
-- Embedded tables (payment schedules, pricing terms, etc.)
-- Signature information
-"""
 
 import pandas as pd
 from pathlib import Path
@@ -21,28 +13,23 @@ from utils.data_cleaner import clean_financial_table, clean_whitespace
 
 
 def extract_8k_metadata(file_path: str) -> Dict[str, any]:
-    """
-    Extract metadata from 8-K filing.
     
-    Returns:
-        Dict with filing info including items reported
-    """
     metadata = get_filing_metadata(file_path)
     sheet_names = get_sheet_names(file_path)
     
     metadata['sheet_count'] = len(sheet_names)
     metadata['sheet_names'] = sheet_names
     
-    # Try to detect items reported from sheet names or content
+    
     items_reported = []
     
-    # Common 8-K item patterns
+    
     item_patterns = [
         r'item\s+(\d+\.\d+)',
         r'item\s+(\d+)',
     ]
     
-    # Check sheet names and first sheet content
+    
     for sheet_name in sheet_names:
         for pattern in item_patterns:
             matches = re.findall(pattern, sheet_name.lower())
@@ -55,29 +42,24 @@ def extract_8k_metadata(file_path: str) -> Dict[str, any]:
 
 
 def extract_tables_from_8k(file_path: str) -> List[Dict]:
-    """
-    Extract all tables from 8-K filing.
     
-    Returns:
-        List of dicts with sheet_name and dataframe
-    """
     sheet_names = get_sheet_names(file_path)
     extracted_tables = []
     
     for sheet_name in sheet_names:
-        # Skip sheets that are typically just signatures
+        
         if 'signature' in sheet_name.lower() and len(sheet_names) > 1:
             continue
         
         try:
             df = extract_table_from_sheet(file_path, sheet_name, header_rows=1)
             
-            # Only keep if there's meaningful data
+            
             if not df.empty and len(df) > 2 and len(df.columns) > 1:
-                # Check if it looks like a table (has some numeric data)
+                
                 numeric_count = sum(df.map(lambda x: isinstance(x, (int, float))).sum())
                 
-                if numeric_count > 3:  # At least some numeric values
+                if numeric_count > 3:  
                     df = clean_financial_table(df)
                     extracted_tables.append({
                         'sheet_name': sheet_name,
@@ -91,11 +73,7 @@ def extract_tables_from_8k(file_path: str) -> List[Dict]:
 
 
 def extract_payment_schedule(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Look for payment schedules (common in 8-K filings about debt).
     
-    Look for sheets with payment/installment information.
-    """
     sheet_names = get_sheet_names(file_path)
     
     for sheet_name in sheet_names:
@@ -111,9 +89,7 @@ def extract_payment_schedule(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_signature_info(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract signature information from 8-K.
-    """
+    
     sheet_keywords = ['signature', 'signatures']
     sheet_names = get_sheet_names(file_path)
     
@@ -129,9 +105,7 @@ def extract_signature_info(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_exhibit_info(file_path: str) -> List[Dict]:
-    """
-    Extract information about exhibits listed in 8-K.
-    """
+    
     sheet_names = get_sheet_names(file_path)
     exhibits = []
     
@@ -151,16 +125,7 @@ def extract_exhibit_info(file_path: str) -> List[Dict]:
 
 
 def process_8k_file(file_path: str, output_dir: str) -> Dict[str, str]:
-    """
-    Process a single 8-K file and save extracted data.
     
-    Args:
-        file_path: Path to 8-K Excel file
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        Dict with paths to output files and status
-    """
     print(f"\nProcessing 8-K: {Path(file_path).name}")
     
     metadata = extract_8k_metadata(file_path)
@@ -168,14 +133,14 @@ def process_8k_file(file_path: str, output_dir: str) -> Dict[str, str]:
     
     results = {'status': 'success', 'metadata': metadata, 'files_created': []}
     
-    # Save metadata
+    
     metadata_df = pd.DataFrame([metadata])
     output_file = f"{output_dir}/8k_metadata_{filing_date}.csv"
     metadata_df.to_csv(output_file, index=False)
     results['files_created'].append(output_file)
     print(f"  ✓ Saved metadata")
     
-    # Extract payment schedule if exists
+    
     payment_df = extract_payment_schedule(file_path)
     if payment_df is not None and not payment_df.empty:
         output_file = f"{output_dir}/8k_payment_schedule_{filing_date}.csv"
@@ -183,7 +148,7 @@ def process_8k_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved payment schedule")
     
-    # Extract all tables
+    
     tables = extract_tables_from_8k(file_path)
     for i, table_info in enumerate(tables):
         sheet_name = table_info['sheet_name'].replace(' ', '_').replace('/', '_')[:50]
@@ -192,7 +157,7 @@ def process_8k_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved table from: {table_info['sheet_name']}")
     
-    # Extract exhibits
+    
     exhibits = extract_exhibit_info(file_path)
     for i, exhibit_info in enumerate(exhibits):
         exhibit_name = exhibit_info['exhibit_name'].replace(' ', '_')[:50]
@@ -205,21 +170,12 @@ def process_8k_file(file_path: str, output_dir: str) -> Dict[str, str]:
 
 
 def process_all_8k_files(input_dir: str, output_dir: str) -> List[Dict]:
-    """
-    Process all 8-K files in the input directory.
     
-    Args:
-        input_dir: Directory containing 8-K Excel files
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        List of processing results for each file
-    """
     input_path = Path(input_dir)
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     
-    # Find all 8-K files
+    
     files_8k = list(input_path.glob('**/*Current report*.xlsx'))
     
     print(f"\nProcessing {len(files_8k)} 8-K files...")

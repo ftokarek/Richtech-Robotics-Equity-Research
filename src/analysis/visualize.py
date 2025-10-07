@@ -1,7 +1,4 @@
-"""
-Visualization module for financial analysis.
-Creates comprehensive charts and visualizations for equity research.
-"""
+
 
 import pandas as pd
 import numpy as np
@@ -12,33 +9,24 @@ from typing import Optional, List
 import warnings
 warnings.filterwarnings('ignore')
 
-# Set style
+
 sns.set_style("whitegrid")
 plt.rcParams['figure.figsize'] = (12, 6)
 plt.rcParams['font.size'] = 10
 
 
 def safe_plot_data(df: pd.DataFrame, columns: list) -> Optional[pd.DataFrame]:
-    """
-    Safely prepare data for plotting by filtering NaN and converting to numeric.
     
-    Args:
-        df: Input DataFrame
-        columns: List of columns to check and clean
-        
-    Returns:
-        Cleaned DataFrame or None if no valid data
-    """
     df_clean = df.copy()
     
-    # Filter out rows where ALL specified columns are NaN
+    
     mask = df_clean[columns].notna().any(axis=1)
     df_clean = df_clean[mask]
     
     if len(df_clean) == 0:
         return None
     
-    # Convert columns to numeric
+    
     for col in columns:
         if col in df_clean.columns:
             df_clean[col] = pd.to_numeric(df_clean[col], errors='coerce')
@@ -47,7 +35,7 @@ def safe_plot_data(df: pd.DataFrame, columns: list) -> Optional[pd.DataFrame]:
 
 
 def plot_revenue_growth(df: pd.DataFrame, output_dir: str):
-    """1. Revenue growth chart"""
+    
     try:
         fig, ax = plt.subplots(figsize=(14, 7))
         
@@ -56,17 +44,17 @@ def plot_revenue_growth(df: pd.DataFrame, output_dir: str):
             plt.close()
             return
         
-        # Clean data
+        
         df_plot = safe_plot_data(df, ['revenue'])
         if df_plot is None:
             print("⚠ Skipped: revenue_growth_chart.png (no data)")
             plt.close()
             return
         
-        # Bar chart for revenue
+        
         ax.bar(df_plot['year_quarter'], df_plot['revenue'], alpha=0.7, color='steelblue', label='Revenue')
         
-        # Line for YoY growth if available
+        
         if 'revenue_yoy' in df_plot.columns:
             df_yoy = df_plot[df_plot['revenue_yoy'].notna()]
             if len(df_yoy) > 0:
@@ -93,7 +81,7 @@ def plot_revenue_growth(df: pd.DataFrame, output_dir: str):
 
 
 def plot_net_profit_margin(df: pd.DataFrame, output_dir: str):
-    """2. Net profit margin trend"""
+    
     fig, ax = plt.subplots(figsize=(12, 6))
     
     if 'net_margin' in df.columns and 'year_quarter' in df.columns:
@@ -101,7 +89,7 @@ def plot_net_profit_margin(df: pd.DataFrame, output_dir: str):
                color='green', label='Net Profit Margin')
         ax.axhline(y=0, color='red', linestyle='--', alpha=0.5, label='Break-even')
         
-        # Add trend line
+        
         x_numeric = np.arange(len(df))
         mask = df['net_margin'].notna()
         if mask.sum() > 1:
@@ -123,7 +111,7 @@ def plot_net_profit_margin(df: pd.DataFrame, output_dir: str):
 
 
 def plot_ebitda_margin(df: pd.DataFrame, output_dir: str):
-    """3. EBITDA margin trend"""
+    
     fig, ax = plt.subplots(figsize=(12, 6))
     
     if 'ebitda_margin' in df.columns and 'year_quarter' in df.columns:
@@ -145,7 +133,7 @@ def plot_ebitda_margin(df: pd.DataFrame, output_dir: str):
 
 
 def plot_operating_cash_flow(df: pd.DataFrame, output_dir: str):
-    """4. Operating cash flow trend"""
+    
     fig, ax = plt.subplots(figsize=(12, 6))
     
     if 'operating_cf' in df.columns and 'year_quarter' in df.columns:
@@ -168,7 +156,7 @@ def plot_operating_cash_flow(df: pd.DataFrame, output_dir: str):
 
 
 def plot_debt_to_equity(df: pd.DataFrame, output_dir: str):
-    """5. Debt to equity ratio over time"""
+    
     try:
         fig, ax = plt.subplots(figsize=(12, 6))
         
@@ -177,7 +165,7 @@ def plot_debt_to_equity(df: pd.DataFrame, output_dir: str):
             plt.close()
             return
         
-        # Clean data
+        
         df_plot = safe_plot_data(df, ['debt_to_equity'])
         if df_plot is None:
             print("⚠ Skipped: debt_to_equity_trend.png (no data)")
@@ -206,14 +194,14 @@ def plot_debt_to_equity(df: pd.DataFrame, output_dir: str):
 
 
 def plot_roe_trend(df: pd.DataFrame, output_dir: str):
-    """6. Return on equity (ROE) trend"""
+    
     fig, ax = plt.subplots(figsize=(12, 6))
     
     if 'roe' in df.columns and 'year_quarter' in df.columns:
         ax.plot(df['year_quarter'], df['roe'], marker='o', linewidth=2.5,
                color='darkgreen', label='ROE')
         
-        # Add ROA for comparison if available
+        
         if 'roa' in df.columns:
             ax.plot(df['year_quarter'], df['roa'], marker='s', linewidth=2.5,
                    color='darkblue', alpha=0.7, label='ROA')
@@ -235,14 +223,14 @@ def plot_roe_trend(df: pd.DataFrame, output_dir: str):
 
 
 def plot_current_ratio(df: pd.DataFrame, output_dir: str):
-    """7. Current ratio (liquidity) trend"""
+    
     fig, ax = plt.subplots(figsize=(12, 6))
     
     if 'current_ratio' in df.columns and 'year_quarter' in df.columns:
         ax.plot(df['year_quarter'], df['current_ratio'], marker='o', linewidth=2.5,
                color='teal', label='Current Ratio')
         
-        # Add quick ratio if available
+        
         if 'quick_ratio' in df.columns:
             ax.plot(df['year_quarter'], df['quick_ratio'], marker='s', linewidth=2,
                    color='navy', alpha=0.7, label='Quick Ratio')
@@ -264,14 +252,14 @@ def plot_current_ratio(df: pd.DataFrame, output_dir: str):
 
 
 def plot_insider_transactions(insider_dir: str, output_dir: str):
-    """8. Insider transactions overview"""
+    
     insider_path = Path(insider_dir)
     
     if not insider_path.exists():
         print("⚠ Insider transactions data not found")
         return
     
-    # Aggregate insider transactions
+    
     files = list(insider_path.glob('form4_nonderivative_*.csv'))
     
     if not files:
@@ -294,7 +282,7 @@ def plot_insider_transactions(insider_dir: str, output_dir: str):
     
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
     
-    # Transaction count by date
+    
     if 'filing_date' in df_insider.columns:
         df_insider['filing_date'] = pd.to_datetime(df_insider['filing_date'])
         tx_counts = df_insider.groupby(df_insider['filing_date'].dt.to_period('Q')).size()
@@ -304,7 +292,7 @@ def plot_insider_transactions(insider_dir: str, output_dir: str):
         ax1.set_title('Insider Trading Activity by Quarter', fontsize=12, fontweight='bold')
         ax1.grid(True, alpha=0.3, axis='y')
     
-    # Transaction type distribution (if available)
+    
     ax2.text(0.5, 0.5, 'Insider Transaction Details\n(See form4 CSV files)', 
             ha='center', va='center', fontsize=14)
     ax2.axis('off')
@@ -316,15 +304,15 @@ def plot_insider_transactions(insider_dir: str, output_dir: str):
 
 
 def plot_quarterly_vs_annual(df: pd.DataFrame, output_dir: str):
-    """9. Quarterly vs annual earnings comparison"""
+    
     fig, ax = plt.subplots(figsize=(14, 7))
     
     if 'net_income' in df.columns and 'year_quarter' in df.columns:
-        # Quarterly earnings
+        
         ax.bar(df['year_quarter'], df['net_income'], alpha=0.6, color='skyblue', 
               label='Quarterly Net Income')
         
-        # TTM earnings if available
+        
         if 'net_income_ttm' in df.columns:
             ax.plot(df['year_quarter'], df['net_income_ttm'], color='darkblue', 
                    marker='o', linewidth=2.5, label='TTM (Trailing 12 Months)')
@@ -344,7 +332,7 @@ def plot_quarterly_vs_annual(df: pd.DataFrame, output_dir: str):
 
 
 def plot_free_cash_flow(df: pd.DataFrame, output_dir: str):
-    """10. Free cash flow trend"""
+    
     fig, ax = plt.subplots(figsize=(12, 6))
     
     if 'free_cash_flow' in df.columns and 'year_quarter' in df.columns:
@@ -352,7 +340,7 @@ def plot_free_cash_flow(df: pd.DataFrame, output_dir: str):
         ax.bar(df['year_quarter'], df['free_cash_flow'], color=colors, alpha=0.7,
               label='Free Cash Flow')
         
-        # Add cumulative FCF line
+        
         cumulative_fcf = df['free_cash_flow'].cumsum()
         ax2 = ax.twinx()
         ax2.plot(df['year_quarter'], cumulative_fcf, color='purple', marker='o',
@@ -374,7 +362,7 @@ def plot_free_cash_flow(df: pd.DataFrame, output_dir: str):
 
 
 def plot_eps_trend(df: pd.DataFrame, output_dir: str):
-    """11. Earnings per share (EPS) trend"""
+    
     fig, ax = plt.subplots(figsize=(12, 6))
     
     eps_col = 'eps_diluted' if 'eps_diluted' in df.columns else 'eps_basic' if 'eps_basic' in df.columns else None
@@ -399,29 +387,29 @@ def plot_eps_trend(df: pd.DataFrame, output_dir: str):
 
 
 def plot_stock_price_vs_earnings(df_financial: pd.DataFrame, df_market: pd.DataFrame, output_dir: str):
-    """12. Stock price vs earnings correlation"""
+    
     fig, ax1 = plt.subplots(figsize=(14, 7))
     
-    # Merge financial and market data by quarter
+    
     if 'date' in df_financial.columns and 'date' in df_market.columns:
         df_financial['date'] = pd.to_datetime(df_financial['date'])
         df_market['date'] = pd.to_datetime(df_market['date'])
         
-        # Aggregate market data by quarter
+        
         df_market['year_quarter'] = df_market['date'].dt.to_period('Q').astype(str)
         market_quarterly = df_market.groupby('year_quarter')['close'].mean().reset_index()
         
         df_merged = pd.merge(df_financial, market_quarterly, on='year_quarter', how='inner')
         
         if len(df_merged) > 0 and 'close' in df_merged.columns and 'net_income' in df_merged.columns:
-            # Plot stock price
+            
             ax1.plot(df_merged['year_quarter'], df_merged['close'], color='blue', 
                     marker='o', linewidth=2.5, label='Stock Price')
             ax1.set_xlabel('Quarter', fontsize=12)
             ax1.set_ylabel('Stock Price ($)', color='blue', fontsize=12)
             ax1.tick_params(axis='y', labelcolor='blue')
             
-            # Plot earnings on secondary axis
+            
             ax2 = ax1.twinx()
             ax2.bar(df_merged['year_quarter'], df_merged['net_income'], alpha=0.3, 
                    color='green', label='Net Income')
@@ -441,14 +429,14 @@ def plot_stock_price_vs_earnings(df_financial: pd.DataFrame, df_market: pd.DataF
 
 
 def plot_key_events_timeline(events_dir: str, output_dir: str):
-    """15. Key event impact timeline (from 8-K reports)"""
+    
     events_path = Path(events_dir)
     
     if not events_path.exists():
         print("⚠ 8-K events data not found")
         return
     
-    # Load 8-K metadata
+    
     metadata_files = list(events_path.glob('8k_metadata_*.csv'))
     
     if not metadata_files:
@@ -473,7 +461,7 @@ def plot_key_events_timeline(events_dir: str, output_dir: str):
     
     fig, ax = plt.subplots(figsize=(16, 8))
     
-    # Create timeline
+    
     y_positions = range(len(df_events))
     ax.scatter(df_events['filing_date'], y_positions, s=100, color='red', alpha=0.7, zorder=3)
     
@@ -499,15 +487,7 @@ def generate_all_visualizations(
     processed_dir: str,
     output_dir: str
 ):
-    """
-    Generate all visualizations.
     
-    Args:
-        df_timeseries: Time series DataFrame with all metrics
-        df_market: Market data DataFrame
-        processed_dir: Directory with processed data
-        output_dir: Directory to save visualizations
-    """
     print("\n" + "=" * 80)
     print("GENERATING VISUALIZATIONS")
     print("=" * 80 + "\n")
@@ -524,7 +504,7 @@ def generate_all_visualizations(
     events_dir = output_path / 'events'
     events_dir.mkdir(exist_ok=True)
     
-    # Generate all charts with error handling
+    
     charts = [
         (plot_revenue_growth, (df_timeseries, str(trends_dir))),
         (plot_net_profit_margin, (df_timeseries, str(ratios_dir))),
@@ -544,20 +524,20 @@ def generate_all_visualizations(
         except Exception as e:
             print(f"⚠ Error in {chart_func.__name__}: {e}")
     
-    # Insider transactions
+    
     try:
         insider_dir = Path(processed_dir) / 'insider transactions'
         plot_insider_transactions(str(insider_dir), str(events_dir))
     except Exception as e:
         print(f"⚠ Error in insider transactions chart: {e}")
     
-    # Stock price vs earnings
+    
     try:
         plot_stock_price_vs_earnings(df_timeseries, df_market, str(trends_dir))
     except Exception as e:
         print(f"⚠ Error in stock price vs earnings chart: {e}")
     
-    # 8-K events
+    
     try:
         events_data_dir = Path(processed_dir) / '8-k related'
         plot_key_events_timeline(str(events_data_dir), str(events_dir))
@@ -579,7 +559,7 @@ if __name__ == '__main__':
     processed_dir = base_dir / 'data' / 'processed'
     output_dir = base_dir / 'data' / 'analysis' / 'visualizations'
     
-    # Load data
+    
     df_timeseries = pd.read_csv(metrics_dir / 'aggregated' / 'comprehensive_timeseries.csv')
     df_market = pd.read_csv(processed_dir / 'market_data' / 'stock_prices_daily.csv')
     

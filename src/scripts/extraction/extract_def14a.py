@@ -1,13 +1,4 @@
-"""
-Extract data from DEF 14A Proxy Statements.
 
-DEF 14A files contain:
-- Executive compensation tables
-- Director compensation
-- Beneficial ownership tables
-- Audit fee information
-- Voting proposals
-"""
 
 import pandas as pd
 from pathlib import Path
@@ -21,11 +12,7 @@ from utils.data_cleaner import clean_financial_table
 
 
 def extract_executive_compensation(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract summary compensation table for executives.
     
-    Look for sheets with: 'summary compensation', 'executive compensation'
-    """
     sheet_keywords = ['summary compensation', 'executive compensation', 'compensation']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -33,7 +20,7 @@ def extract_executive_compensation(file_path: str) -> Optional[pd.DataFrame]:
         print("  No executive compensation table found")
         return None
     
-    # Prefer 'summary compensation' if available
+    
     for sheet in matching_sheets:
         if 'summary' in sheet.lower():
             sheet_name = sheet
@@ -54,11 +41,7 @@ def extract_executive_compensation(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_director_compensation(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract director compensation table.
     
-    Look for sheets with: 'director compensation'
-    """
     sheet_keywords = ['director compensation', 'director']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -80,15 +63,11 @@ def extract_director_compensation(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_beneficial_ownership(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract beneficial ownership table.
     
-    Look for sheets with: 'beneficial ownership', 'ownership', 'security ownership'
-    """
     sheet_keywords = ['beneficial ownership', 'ownership', 'security ownership']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
-    # Filter out compensation-related sheets
+    
     matching_sheets = [s for s in matching_sheets if 'compensation' not in s.lower()]
     
     if not matching_sheets:
@@ -109,11 +88,7 @@ def extract_beneficial_ownership(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_audit_fees(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract audit fees table.
     
-    Look for sheets with: 'audit fees', 'audit', 'fees'
-    """
     sheet_keywords = ['audit fees', 'audit', 'fees']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -135,11 +110,7 @@ def extract_audit_fees(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def extract_stock_option_grants(file_path: str) -> Optional[pd.DataFrame]:
-    """
-    Extract stock option grants table if available.
     
-    Look for sheets with: 'option', 'stock awards', 'grants'
-    """
     sheet_keywords = ['option grants', 'stock awards', 'option awards']
     matching_sheets = find_sheets_by_keyword(file_path, sheet_keywords)
     
@@ -160,16 +131,7 @@ def extract_stock_option_grants(file_path: str) -> Optional[pd.DataFrame]:
 
 
 def process_def14a_file(file_path: str, output_dir: str) -> Dict[str, str]:
-    """
-    Process a single DEF 14A file and save extracted data.
     
-    Args:
-        file_path: Path to DEF 14A Excel file
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        Dict with paths to output files and status
-    """
     print(f"\nProcessing DEF 14A: {Path(file_path).name}")
     
     metadata = get_filing_metadata(file_path)
@@ -177,7 +139,7 @@ def process_def14a_file(file_path: str, output_dir: str) -> Dict[str, str]:
     
     results = {'status': 'success', 'metadata': metadata, 'files_created': []}
     
-    # Extract executive compensation
+    
     exec_comp_df = extract_executive_compensation(file_path)
     if exec_comp_df is not None and not exec_comp_df.empty:
         output_file = f"{output_dir}/def14a_executive_compensation_{filing_date}.csv"
@@ -185,7 +147,7 @@ def process_def14a_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved executive compensation")
     
-    # Extract director compensation
+    
     dir_comp_df = extract_director_compensation(file_path)
     if dir_comp_df is not None and not dir_comp_df.empty:
         output_file = f"{output_dir}/def14a_director_compensation_{filing_date}.csv"
@@ -193,7 +155,7 @@ def process_def14a_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved director compensation")
     
-    # Extract beneficial ownership
+    
     ownership_df = extract_beneficial_ownership(file_path)
     if ownership_df is not None and not ownership_df.empty:
         output_file = f"{output_dir}/def14a_beneficial_ownership_{filing_date}.csv"
@@ -201,7 +163,7 @@ def process_def14a_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved beneficial ownership")
     
-    # Extract audit fees
+    
     audit_df = extract_audit_fees(file_path)
     if audit_df is not None and not audit_df.empty:
         output_file = f"{output_dir}/def14a_audit_fees_{filing_date}.csv"
@@ -209,7 +171,7 @@ def process_def14a_file(file_path: str, output_dir: str) -> Dict[str, str]:
         results['files_created'].append(output_file)
         print(f"  ✓ Saved audit fees")
     
-    # Extract stock options (if available)
+    
     options_df = extract_stock_option_grants(file_path)
     if options_df is not None and not options_df.empty:
         output_file = f"{output_dir}/def14a_stock_options_{filing_date}.csv"
@@ -221,21 +183,12 @@ def process_def14a_file(file_path: str, output_dir: str) -> Dict[str, str]:
 
 
 def process_all_def14a_files(input_dir: str, output_dir: str) -> List[Dict]:
-    """
-    Process all DEF 14A files in the input directory.
     
-    Args:
-        input_dir: Directory containing DEF 14A Excel files
-        output_dir: Directory to save output CSVs
-        
-    Returns:
-        List of processing results for each file
-    """
     input_path = Path(input_dir)
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
     
-    # Find all DEF 14A files
+    
     files_def14a = list(input_path.glob('**/*proxy*.xlsx'))
     
     print(f"\nProcessing {len(files_def14a)} DEF 14A files...")

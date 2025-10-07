@@ -23,7 +23,7 @@ from pathlib import Path
 from datetime import datetime
 import json
 
-# Add extraction modules to path
+
 sys.path.append(str(Path(__file__).parent))
 
 from extraction.extract_form4 import process_all_form4_files
@@ -34,12 +34,12 @@ from extraction.extract_def14a import process_all_def14a_files
 from extraction.extract_registration import process_all_registration_files
 
 
-# Configuration
+
 BASE_DIR = Path(__file__).parent.parent.parent
 RAW_DATA_DIR = BASE_DIR / 'data' / 'raw'
 PROCESSED_DATA_DIR = BASE_DIR / 'data' / 'processed'
 
-# Extractor definitions
+
 EXTRACTORS = {
     'form4': {
         'name': 'Form 4 - Insider Transactions',
@@ -87,7 +87,7 @@ EXTRACTORS = {
 
 
 def print_banner():
-    """Print welcome banner."""
+    
     print("\n" + "=" * 80)
     print("RICHTECH ROBOTICS - SEC FILINGS DATA EXTRACTION")
     print("=" * 80)
@@ -97,7 +97,7 @@ def print_banner():
 
 
 def print_summary(results: dict):
-    """Print extraction summary."""
+    
     print("\n" + "=" * 80)
     print("EXTRACTION SUMMARY")
     print("=" * 80)
@@ -138,17 +138,7 @@ def print_summary(results: dict):
 
 
 def run_extractor(extractor_key: str, extractor_config: dict, verbose: bool = False) -> dict:
-    """
-    Run a single extractor.
     
-    Args:
-        extractor_key: Key identifying the extractor
-        extractor_config: Configuration dict for the extractor
-        verbose: Print verbose output
-        
-    Returns:
-        Dict with extraction results
-    """
     name = extractor_config['name']
     function = extractor_config['function']
     input_dir = str(extractor_config['input_dir'])
@@ -161,15 +151,15 @@ def run_extractor(extractor_key: str, extractor_config: dict, verbose: bool = Fa
     print(f"{'=' * 80}")
     
     try:
-        # Run the extraction function
+        
         extraction_results = function(input_dir, output_dir)
         
-        # Calculate statistics
+        
         successful = sum(1 for r in extraction_results if r.get('status') == 'success')
         failed = sum(1 for r in extraction_results if r.get('status') == 'error')
         processed = len(extraction_results)
         
-        # Count files created
+        
         files_created = 0
         for r in extraction_results:
             if r.get('files_created'):
@@ -202,7 +192,7 @@ def run_extractor(extractor_key: str, extractor_config: dict, verbose: bool = Fa
 
 
 def main():
-    """Main execution function."""
+    
     parser = argparse.ArgumentParser(
         description='Extract data from Richtech Robotics SEC filings'
     )
@@ -229,14 +219,14 @@ def main():
     
     args = parser.parse_args()
     
-    # Print banner
+    
     print_banner()
     
-    # Determine which extractors to run
+    
     extractors_to_run = {}
     
     if args.only:
-        # Run only specified extractor
+        
         if args.only in EXTRACTORS:
             extractors_to_run[args.only] = EXTRACTORS[args.only]
             print(f"Running only: {EXTRACTORS[args.only]['name']}\n")
@@ -245,31 +235,31 @@ def main():
             print(f"Available: {', '.join(EXTRACTORS.keys())}")
             sys.exit(1)
     else:
-        # Run all except skipped
+        
         for key, config in EXTRACTORS.items():
             if args.skip and key == args.skip:
                 print(f"Skipping: {config['name']}\n")
                 continue
             extractors_to_run[key] = config
     
-    # Run extractors
+    
     results = {}
     
     for key, config in extractors_to_run.items():
         result = run_extractor(key, config, args.verbose)
         results[key] = result
     
-    # Print summary
+    
     print_summary(results)
     
-    # Save report if requested
+    
     if args.save_report:
         report_file = PROCESSED_DATA_DIR / f"extraction_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
         with open(report_file, 'w') as f:
             json.dump(results, f, indent=2, default=str)
         print(f"Report saved to: {report_file}\n")
     
-    # Return exit code based on results
+    
     total_failed = sum(r.get('failed', 0) for r in results.values())
     sys.exit(0 if total_failed == 0 else 1)
 

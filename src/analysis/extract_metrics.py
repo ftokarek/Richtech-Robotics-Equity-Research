@@ -1,7 +1,4 @@
-"""
-Extract key financial metrics from processed CSV files.
-Parses 10-Q and 10-K data to extract balance sheet, income statement, and cash flow metrics.
-"""
+
 
 import pandas as pd
 import numpy as np
@@ -15,32 +12,25 @@ from utils.data_cleaner import clean_numeric_column
 
 
 def extract_date_from_filename(filename: str) -> Optional[str]:
-    """Extract date from filename like '10q_balance_sheet_20240214.csv'"""
+    
     match = re.search(r'(\d{8})', filename)
     if match:
         date_str = match.group(1)
-        # Convert YYYYMMDD to YYYY-MM-DD
+        
         return f"{date_str[:4]}-{date_str[4:6]}-{date_str[6:8]}"
     return None
 
 
 def find_value_in_df(df: pd.DataFrame, keywords: List[str]) -> Optional[float]:
-    """
-    Find a numeric value in DataFrame by searching for keywords in first column.
-    Returns the LAST (most recent) non-null numeric value from that row.
     
-    Args:
-        df: DataFrame to search
-        keywords: List of keywords to search for (case insensitive)
-    """
     for keyword in keywords:
-        # Search in first column for the keyword
+        
         for idx, row in df.iterrows():
             first_col_val = str(row.iloc[0]).lower() if pd.notna(row.iloc[0]) else ''
             
-            # Normalize apostrophes - replace ALL types of apostrophes/quotes
-            # Unicode: ' (8217), ' (8216), " (8220), " (8221)
-            # ASCII: ' (39), " (34)
+            
+            
+            
             apostrophes = [chr(8217), chr(8216), chr(8220), chr(8221), "'", '"']
             for apos in apostrophes:
                 first_col_val = first_col_val.replace(apos, '')
@@ -50,14 +40,14 @@ def find_value_in_df(df: pd.DataFrame, keywords: List[str]) -> Optional[float]:
                 search_keyword = search_keyword.replace(apos, '')
             
             if search_keyword in first_col_val:
-                # Found the row! Now extract the last non-null numeric value
-                for col in reversed(df.columns[1:]):  # Start from last column, go backwards
+                
+                for col in reversed(df.columns[1:]):  
                     val = row[col]
                     if pd.notna(val):
                         try:
-                            # Try to convert to float
+                            
                             numeric_val = float(val)
-                            # Skip if it's a year (like 2024, 2025)
+                            
                             if 2000 <= numeric_val <= 2100:
                                 continue
                             return numeric_val
@@ -67,12 +57,7 @@ def find_value_in_df(df: pd.DataFrame, keywords: List[str]) -> Optional[float]:
 
 
 def parse_balance_sheet(file_path: str) -> Dict:
-    """
-    Parse balance sheet CSV and extract key metrics.
     
-    Returns dict with: total_assets, current_assets, total_liabilities, 
-    current_liabilities, stockholders_equity, cash, inventory, accounts_receivable
-    """
     df = pd.read_csv(file_path)
     
     metrics = {
@@ -80,7 +65,7 @@ def parse_balance_sheet(file_path: str) -> Dict:
         'source_file': Path(file_path).name
     }
     
-    # Define search keywords for each metric
+    
     search_terms = {
         'total_assets': ['total assets'],
         'current_assets': ['total current assets', 'current assets'],
@@ -101,12 +86,7 @@ def parse_balance_sheet(file_path: str) -> Dict:
 
 
 def parse_income_statement(file_path: str) -> Dict:
-    """
-    Parse income statement CSV and extract key metrics.
     
-    Returns dict with: revenue, cogs, gross_profit, operating_expenses,
-    operating_income, interest_expense, net_income, eps
-    """
     df = pd.read_csv(file_path)
     
     metrics = {
@@ -132,7 +112,7 @@ def parse_income_statement(file_path: str) -> Dict:
         value = find_value_in_df(df, keywords)
         metrics[metric_name] = value
     
-    # Calculate gross profit if not found directly
+    
     if metrics.get('gross_profit') is None and metrics.get('revenue') and metrics.get('cogs'):
         metrics['gross_profit'] = metrics['revenue'] - abs(metrics['cogs'])
     
@@ -140,11 +120,7 @@ def parse_income_statement(file_path: str) -> Dict:
 
 
 def parse_cash_flow(file_path: str) -> Dict:
-    """
-    Parse cash flow statement CSV and extract key metrics.
     
-    Returns dict with: operating_cf, investing_cf, financing_cf, capex, free_cash_flow
-    """
     df = pd.read_csv(file_path)
     
     metrics = {
@@ -168,7 +144,7 @@ def parse_cash_flow(file_path: str) -> Dict:
         value = find_value_in_df(df, keywords)
         metrics[metric_name] = value
     
-    # Calculate free cash flow
+    
     if metrics.get('operating_cf') and metrics.get('capex'):
         metrics['free_cash_flow'] = metrics['operating_cf'] - abs(metrics.get('capex', 0))
     elif metrics.get('operating_cf'):
@@ -178,7 +154,7 @@ def parse_cash_flow(file_path: str) -> Dict:
 
 
 def parse_revenue_breakdown(file_path: str) -> Dict:
-    """Parse revenue breakdown/disaggregation if available."""
+    
     df = pd.read_csv(file_path)
     
     metrics = {
@@ -186,7 +162,7 @@ def parse_revenue_breakdown(file_path: str) -> Dict:
         'source_file': Path(file_path).name
     }
     
-    # Try to find product/service revenue split
+    
     search_terms = {
         'product_revenue': ['product', 'products', 'product sale'],
         'service_revenue': ['service', 'services', 'service revenue']
@@ -200,16 +176,7 @@ def parse_revenue_breakdown(file_path: str) -> Dict:
 
 
 def extract_all_metrics(processed_dir: str, output_dir: str) -> Dict[str, pd.DataFrame]:
-    """
-    Extract all financial metrics from processed CSV files.
     
-    Args:
-        processed_dir: Path to data/processed directory
-        output_dir: Path to data/metrics directory
-        
-    Returns:
-        Dict with DataFrames for balance_sheet, income_statement, cash_flow
-    """
     processed_path = Path(processed_dir)
     output_path = Path(output_dir)
     output_path.mkdir(parents=True, exist_ok=True)
@@ -218,13 +185,13 @@ def extract_all_metrics(processed_dir: str, output_dir: str) -> Dict[str, pd.Dat
     print("EXTRACTING FINANCIAL METRICS")
     print("=" * 80)
     
-    # Find all relevant files
+    
     balance_sheets = []
     income_statements = []
     cash_flows = []
     revenue_breakdowns = []
     
-    # Process 10-Q files
+    
     quarterly_dir = processed_path / 'quarterly reports'
     if quarterly_dir.exists():
         print(f"\nProcessing quarterly reports from: {quarterly_dir}")
@@ -249,7 +216,7 @@ def extract_all_metrics(processed_dir: str, output_dir: str) -> Dict[str, pd.Dat
             metrics = parse_revenue_breakdown(str(file))
             revenue_breakdowns.append(metrics)
     
-    # Process 10-K files
+    
     annual_dir = processed_path / 'annual reports'
     if annual_dir.exists():
         print(f"\nProcessing annual reports from: {annual_dir}")
@@ -264,12 +231,12 @@ def extract_all_metrics(processed_dir: str, output_dir: str) -> Dict[str, pd.Dat
             metrics = parse_income_statement(str(file))
             income_statements.append(metrics)
     
-    # Convert to DataFrames
+    
     df_balance = pd.DataFrame(balance_sheets).sort_values('date').reset_index(drop=True)
     df_income = pd.DataFrame(income_statements).sort_values('date').reset_index(drop=True)
     df_cashflow = pd.DataFrame(cash_flows).sort_values('date').reset_index(drop=True)
     
-    # Save to CSV
+    
     print(f"\n{'=' * 80}")
     print("SAVING EXTRACTED METRICS")
     print(f"{'=' * 80}")
